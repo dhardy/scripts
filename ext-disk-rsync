@@ -3,6 +3,10 @@
 # A script to backup one or more directories via r-sync. It handles by-date
 # naming of backups and stores duplicate files with hard-links, as well as
 # making sure incomplete backups don't get confused with completed ones.
+# Usage: plug in you backup disk and mount it, then run
+# ./ext-disk-rsync BACKUP_DIR
+# where BACKUP_DIR is the path to the base backup folder. Each backup source
+# will be put in a sub-folder of this. Delete old backups by hand as necessary.
 
 import subprocess
 import shlex

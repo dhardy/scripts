@@ -1,0 +1,96 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# A script to backup one or more directories via r-sync. It handles by-date
+# naming of backups and stores duplicate files with hard-links, as well as
+# making sure incomplete backups don't get confused with completed ones.
+
+import subprocess
+import shlex
+import sys
+from unipath import Path
+
+# ———  definitions  ———
+# Put locations to backup here:
+sources=["/home/","/"]
+# and a list of files to exclude here:
+excludes="/home/dhardy/sh/excludes.txt"
+
+#  ———  functions  ———
+
+def call_command(command, pipe=None):
+    process = subprocess.Popen(shlex.split(command),
+    stdin=subprocess.PIPE,
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE)
+    output=process.communicate(input=pipe)
+    return output
+
+def do_backup(source,backup_dest):
+    bpath=backup_dest.child(bname)
+    bptmp=backup_dest.child(btmp)
+    if bpath.exists():
+        print "Error:",bpath,"already exists!"
+        sys.exit(1)
+    if bptmp.exists():
+        print "Error:",bptmp,"already exists!"
+        sys.exit(1)
+    
+    if bptmp.mkdir():
+        print "Unable to create backup dir",bptmp
+        sys.exit(1)
+    
+    prevComplete=backup_dest.child("latest-complete")
+    
+    print "Creating new backup in",bptmp,"..."
+    
+    """
+    See http://www.sanitarium.net/golug/rsync_backups_2010.html
+    other args:
+    --verbose --progress --itemize-changes
+    """
+    retcode = subprocess.call(["rsync",
+        "--one-file-system",
+        "--archive","--hard-links","--human-readable","--inplace","--numeric-ids",
+        "--delete","--delete-excluded","--exclude-from="+excludes]+
+        (["--link-dest="+prevComplete] if prevComplete.isdir() else [])+
+        [source,bptmp])
+    
+    if retcode:
+        print "Error; partial backup in:",bptmp
+    else:
+        bptmp.rename(bpath)
+        if prevComplete.islink():
+            prevComplete.remove()
+        if not prevComplete.exists():
+            prevComplete.write_link(bname)
+        print "Successfully backed up to:",bpath
+
+#  ———  script  ———
+
+if not Path(excludes).exists():
+    print "Error: hard-coded exclude file \""+excludes+"\" not found."
+    sys.exit(1)
+
+if int(call_command("id -u")[0]) != 0:
+    print "Please run as root."
+    sys.exit(1)
+
+dest = None
+if len(sys.argv) == 2:
+    dest = Path(sys.argv[1])
+
+if dest==None or not dest.isdir():
+    print "Usage:",sys.argv[0],"backup-dest"
+    print "Path should be a directory to contain new backups."
+    sys.exit(1)
+
+bname=call_command("date -u '+%F-%T'")[0].strip()
+btmp=bname+"-incomplete"
+
+for source in sources:
+    if source == "/":
+        sdest = dest.child("root")
+    else:
+        sdest = dest.child(Path(source.rstrip('/')).name)
+    sdest.mkdir()
+    do_backup(source,sdest)

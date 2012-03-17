@@ -1,0 +1,6 @@
+/dev
+/media
+/proc
+/tmp
+/var/tmp
+/var/cache

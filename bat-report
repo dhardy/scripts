@@ -1,0 +1,14 @@
+#!/bin/sh
+# A simple script to report battery status. Superceeded by battery.rb.
+
+POWER_AVG=$(cat /sys/devices/platform/smapi/BAT0/power_avg)
+POWER_NOW=$(cat /sys/devices/platform/smapi/BAT0/power_now)
+
+echo "Remaining $(cat /sys/devices/platform/smapi/BAT0/remaining_percent)% ($(cat /sys/devices/platform/smapi/BAT0/remaining_capacity)/$(cat /sys/devices/platform/smapi/BAT0/last_full_capacity) mWh; design capactiy $(cat /sys/devices/platform/smapi/BAT0/design_capacity) mWh)"
+if [ $POWER_NOW -lt 0 ]; then
+	echo "Remaining running time: $(cat /sys/devices/platform/smapi/BAT0/remaining_running_time) minutes average, $(cat /sys/devices/platform/smapi/BAT0/remaining_running_time_now) minutes now"
+else
+	echo "Remaining charging time: $(cat /sys/devices/platform/smapi/BAT0/remaining_charging_time) minutes"
+fi
+echo "Power: $POWER_AVG mW average, $(cat /sys/devices/platform/smapi/BAT0/power_now) mW now"
+

@@ -15,9 +15,22 @@ from unipath import Path
 
 # ———  definitions  ———
 # Put locations to backup here:
-sources=["/home/","/"]
-# and a list of files to exclude here:
-excludes="/home/dhardy/sh/excludes.txt"
+#sources=["/home/"]#,"/"]
+sources=["/home/dhardy/rtest/source/"]
+# and, for each location, a list of exclude rules. See rsync manual for details,
+# but in brief: patterns starting with a slash like "/foo" are paths relative
+# to the source directory, patterns ending with a slash like "somedir/" match
+# only directories, while other patterns match any file/dir/symlink/...
+# Patterns may include *, **, ?, [...].
+#excludes=[
+    #["/*/.googleearth/Cache/", "/*/.local/share/Trash/", "/*/.android/avd/",
+    #"/*/.ccache/", "/dhardy/download/", "/*/.cache/", "/*/.gvfs/",
+    #"*.o","*.class"]#,
+    ##["/dev/", "/media/", "/proc/", "/tmp/", "/var/tmp/", "/var/cache/"]
+#]
+excludes = [["/r3", "r2"]]
+# set to true to check every file with a checksum
+checksum=True
 
 #  ———  functions  ———
 
@@ -29,7 +42,7 @@ def call_command(command, pipe=None):
     output=process.communicate(input=pipe)
     return output
 
-def do_backup(source,backup_dest):
+def do_backup(source,backup_dest,excludes):
     bpath=backup_dest.child(bname)
     bptmp=backup_dest.child(btmp)
     if bpath.exists():
@@ -52,12 +65,19 @@ def do_backup(source,backup_dest):
     other args:
     --verbose --progress --itemize-changes
     """
-    retcode = subprocess.call(["rsync",
+    args=["rsync",
         "--one-file-system",
         "--archive","--hard-links","--human-readable","--inplace","--numeric-ids",
-        "--delete","--delete-excluded","--exclude-from="+excludes]+
-        (["--link-dest="+prevComplete] if prevComplete.isdir() else [])+
-        [source,bptmp])
+        "--delete","--delete-excluded"]
+    for exclude in excludes:
+        args += ["--exclude=\""+exclude+"\""]
+    if checksum:
+        args += ["--checksum"]
+    if prevComplete.isdir():
+        args += ["--link-dest="+prevComplete]
+    args += [source,bptmp]
+    subprocess.call(["echo"]+args)
+    retcode = subprocess.call(args)
     
     if retcode:
         print "Error; partial backup in:",bptmp
@@ -70,10 +90,6 @@ def do_backup(source,backup_dest):
         print "Successfully backed up to:",bpath
 
 #  ———  script  ———
-
-if not Path(excludes).exists():
-    print "Error: hard-coded exclude file \""+excludes+"\" not found."
-    sys.exit(1)
 
 if int(call_command("id -u")[0]) != 0:
     print "Please run as root."
@@ -91,10 +107,11 @@ if dest==None or not dest.isdir():
 bname=call_command("date -u '+%F-%T'")[0].strip()
 btmp=bname+"-incomplete"
 
-for source in sources:
+for i in range(len(sources)):
+    source = sources[i]
     if source == "/":
         sdest = dest.child("root")
     else:
         sdest = dest.child(Path(source.rstrip('/')).name)
     sdest.mkdir()
-    do_backup(source,sdest)
+    do_backup(source,sdest,excludes[i])

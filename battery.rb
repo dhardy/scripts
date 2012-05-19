@@ -55,8 +55,8 @@ begin
     d = Time::now()
     d += remaning_time * 60
     puts "Current status\t\t#{percent}%"
-    puts "Remaining " + descriptingword.downcase + " time\t" +   addLeadingZero(hours) + "h" + addLeadingZero(minutes) + "m"
     if state != "idle"
+      puts "Remaining " + descriptingword.downcase + " time\t" +   addLeadingZero(hours) + "h" + addLeadingZero(minutes) + "m"
       puts descriptingword + " until\t\t" + addLeadingZero(d.hour()) + ":" + addLeadingZero(d.min())
     end
     temperature = getFileValue("/sys/devices/platform/smapi/BAT0/temperature").to_i / 1000.0

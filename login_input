@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# allow two-finger and edge scrolling vertically and horizontally:
+xinput set-int-prop "SynPS/2 Synaptics TouchPad" "Synaptics Edge Scrolling" 8 1 1 0
+xinput set-int-prop "SynPS/2 Synaptics TouchPad" "Synaptics Two-Finger Scrolling" 8 1 1
+# disable tapping completely:
+xinput set-int-prop "SynPS/2 Synaptics TouchPad" "Synaptics Tap Action" 8 0 0 0 0 0 0 0
+xinput set-int-prop "SynPS/2 Synaptics TouchPad" "Synaptics Click Action" 8 0 0 0
+
+# set keyboard map (effect on login is to allow switching):
+#model is logitech_g15 or thinkpad60
+setxkbmap -layout cyborg16,cyborg16\
+    -variant colemak_ds,basic\
+    -option -option grp:sclk_toggle,grp_led:caps,compose:menu,caps:backspace\
+    -model thinkpad60
+#,lv3:rwin_switch,lv3:ralt_switch
+
+# enable key repeat on capslock (still needs to be done repeatedly?)
+xset r 66
+#while true; do xset r 66; sleep 5; done &
+
+if [ -f ~/.Xmodmap ]
+then
+	xmodmap ~/.Xmodmap
+fi

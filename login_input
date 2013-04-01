@@ -10,10 +10,12 @@
 
 # set keyboard map (effect on login is to allow switching):
 #model is logitech_g15 or thinkpad60
+# updates seem to be missed without piping to xkbcomp
 setxkbmap -layout cyborg16,cyborg16\
     -variant colemak_ch,basic\
     -option grp:sclk_toggle,grp_led:caps,compose:menu\
-    -model thinkpad60
+    -model thinkpad60\
+    -print | xkbcomp - $DISPLAY
 #,lv3:rwin_switch,lv3:ralt_switch
 
 # enable key repeat on capslock (still needs to be done repeatedly?)

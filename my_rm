@@ -35,7 +35,7 @@ while test $# -ne 0; do
         else
             rmdir --ignore-fail-on-non-empty "$arg"
             if [ -d "$arg" ]; then
-                read -arg "rm: recursively remove directory \`$arg\`? " q
+                read -p "rm: recursively remove directory \`$arg\`? " q
                 if [ "$q" = "y" ]; then
                     $RM -rf "$arg"
                 fi

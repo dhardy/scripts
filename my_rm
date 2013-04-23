@@ -3,8 +3,11 @@
 
 #real rm:
 RM=/bin/rm
+SELF=$0
 HELP=""
 FORCE=""
+RECURSE=""
+PARENT=""
 
 while test $# -ne 0; do
     arg=$1
@@ -14,6 +17,12 @@ while test $# -ne 0; do
     case $arg in
         (-f)
             FORCE="t"
+            continue;;
+        (-r)
+            RECURSE="t"
+            continue;;
+        (-p)
+            PARENT="t"
             continue;;
         (-h)
             HELP="t"
@@ -32,6 +41,11 @@ while test $# -ne 0; do
     elif [ -d "$arg" ]; then
         if [ -n "$FORCE" ]; then
             $RM -rf "$arg"
+        elif [ -n "$RECURSE" ]; then
+            # might not work well for large directories, but should be killable in this case
+            for rec in $(find "$arg" | sort -r); do
+                $SELF "$rec"
+            done
         else
             rmdir --ignore-fail-on-non-empty "$arg"
             if [ -d "$arg" ]; then
@@ -50,14 +64,21 @@ while test $# -ne 0; do
     else
         echo "rm: \`$arg\` is not a file, link or directory"
     fi
+    
+    # Now do the -p bit
+    if [ -n "$PARENT" ]; then
+        rmdir --parents --ignore-fail-on-non-empty $(dirname "$arg")
+    fi
 done
 
 if [ -n "$HELP" ]; then
     echo "Usage: $0 [OPTIONS] PATHS"
-    echo "Deletes each PATH listed in a more sensible way than standard rm."
+    echo "Deletes each PATH listed in a more sensible way than standard rm: does not prompt when deleting symbolic links or empty directories."
     echo ""
     echo "Options (must preceed paths to have an effect):"
     echo "    -h\tPrint this message."
     echo "    -f\tDelete without confirmation."
+    echo "    -r\tRecursively remove a directory and its contents according to the usual rules (i.e. handle each contained file/folder according to the usual rules instead of prompting once for the entire directory)."
+    echo "    -p\tAlso remove empty parent directories (as 'rmdir -p' does)"
     exit 1
 fi

@@ -1,0 +1,24 @@
+#!/bin/sh
+# A simple script to report battery status. Superceeded by battery.rb.
+
+BAT0=/sys/devices/platform/smapi/BAT0
+if [ ! -d $BAT0 ]; then
+    if [ "$(whoami)" = "root" ]; then
+	modprobe tp_smapi || exit 1
+    else
+	echo "Error: no directory $BAT0 (run as root to load tp_smapi)" >&2
+	exit 1
+    fi
+fi
+
+POWER_AVG=$(cat $BAT0/power_avg)
+POWER_NOW=$(cat $BAT0/power_now)
+
+echo "Remaining $(cat $BAT0/remaining_percent)% ($(cat $BAT0/remaining_capacity)/$(cat $BAT0/last_full_capacity) mWh; design capactiy $(cat $BAT0/design_capacity) mWh)"
+if [ $POWER_NOW -lt 0 ]; then
+    echo "Remaining running time: $(cat $BAT0/remaining_running_time) minutes average, $(cat $BAT0/remaining_running_time_now) minutes now"
+else
+    echo "Remaining charging time: $(cat $BAT0/remaining_charging_time) minutes"
+fi
+echo "Power: $POWER_AVG mW average, $(cat $BAT0/power_now) mW now"
+

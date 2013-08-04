@@ -1,0 +1,35 @@
+#! /bin/sh
+
+test -f /usr/sbin/laptop_mode || exit 0
+
+# Automatically disable laptop mode when the battery almost runs out,
+# and re-enable it when it 
+
+/usr/sbin/laptop_mode auto
+echo "Battery"
+sudo -u fede notify-send "ACPI Status" "Switched to Battery Power" -i /usr/share/icons/oxygen/48x48/status/battery-100.png -t 5000
+echo 1500 > /proc/sys/vm/dirty_writeback_centisecs
+/etc/rc.d/bluetooth stop
+rmmod usb-storage
+rmmod uhci_hcd
+rmmod ehci_hcd
+rmmod uvcvideo
+rmmod sky2
+rmmod joydev
+rmmod usbhid
+rmmod hid
+rmmod uas
+rmmod btusb
+rmmod rfcomm
+rmmod sco
+rmmod bnep
+rmmod l2cap
+rmmod btusb
+rmmod usbcore
+rmmod bluetooth
+
+for i in /sys/bus/pci/devices/*/power/control ; do echo auto > $i ; done
+for i in /sys/bus/spi/devices/*/power/control ; do echo auto > $i ; done
+for i in /sys/bus/i2c/devices/*/power/control ; do echo auto > $i ; done
+exit 0
+

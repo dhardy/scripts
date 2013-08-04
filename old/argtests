@@ -1,0 +1,16 @@
+#!/bin/bash
+
+echo "Num: $#"
+echo "All:"
+for arg in "$*"; do
+	echo "\t$arg"
+done
+echo "All:"
+for arg in "$@"; do
+	echo "\t$arg"
+done
+echo "First:"
+for arg in "$1"; do
+        echo "\t$arg"
+done
+

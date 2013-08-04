@@ -1,0 +1,13 @@
+#!/bin/sh
+
+LEFT_FLAG=~/.mouse-left-handed
+
+if [ -e $LEFT_FLAG ];
+then
+	rm -f $LEFT_FLAG;
+	xmodmap -e "pointer = 1 2 3 4 5 6 7 8 9";
+else
+	touch $LEFT_FLAG;
+	xmodmap -e "pointer = 3 2 1 4 5 6 7 9 8";
+fi
+

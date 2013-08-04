@@ -1,0 +1,3 @@
+#!/bin/sh
+akregator -a $1
+

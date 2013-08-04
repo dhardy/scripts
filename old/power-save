@@ -1,0 +1,5 @@
+#!/bin/sh
+
+echo Y >/sys/module/snd_hda_intel/parameters/power_save_controller
+echo disable > /proc/acpi/ibm/bluetooth
+

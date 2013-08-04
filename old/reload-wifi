@@ -1,0 +1,6 @@
+#!/bin/sh
+# a hack to get wifi working again (some routers are a pain)
+sudo rmmod iwlwifi
+sudo modprobe iwlwifi # iwlagn bt_coex_active=0
+# passing this option might help: bt_coex_active=0
+sudo /etc/init.d/network-manager restart

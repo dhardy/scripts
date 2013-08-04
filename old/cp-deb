@@ -1,0 +1,12 @@
+#!/bin/sh
+
+cd $1
+D2=/var/cache/apt/archives
+
+for file in *.deb
+do
+	if [ ! -f $D2/$file ]
+	then
+		cp $file $D2/$file
+	fi
+done

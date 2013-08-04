@@ -1,0 +1,28 @@
+#! /bin/sh
+
+#test -f /usr/sbin/laptop_mode || exit 0
+
+# ac on/offline event handler
+
+/usr/sbin/laptop_mode auto
+echo "AC adapter"
+sudo -u fede notify-send "ACPI Status" "Switched to AC Power" -i /usr/share/icons/nuvola/48x48/status/battery-charging.png -t 5000
+/etc/rc.d/bluetooth start
+modprobe usb-storage
+modprobe uhci_hcd
+modprobe ehci_hcd
+modprobe uvcvideo
+modprobe sky2
+modprobe joydev
+modprobe usbhid
+modprobe hid    
+modprobe usbcore
+modprobe btusb
+modprobe bluetooth
+modprobe rfcomm
+modprobe sco
+modprobe bnep
+modprobe l2cap
+modprobe btusb
+exit 0
+

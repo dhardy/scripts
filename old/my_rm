@@ -8,6 +8,7 @@ HELP=""
 FORCE=""
 RECURSE=""
 PARENT=""
+SKIP_NE_DIR=""
 
 while test $# -ne 0; do
     arg=$1
@@ -24,6 +25,9 @@ while test $# -ne 0; do
         (-p)
             PARENT="t"
             continue;;
+        (--skip-non-empty-dir)
+            SKIP_NE_DIR="t"
+            continue;
         (-h)
             HELP="t"
             break;;
@@ -41,10 +45,12 @@ while test $# -ne 0; do
     elif [ -d "$arg" ]; then
         if [ -n "$FORCE" ]; then
             $RM -rf "$arg"
+        elif [ -n "$SKIP_NE_DIR" ]; then
+            rmdir --ignore-fail-on-non-empty "$arg"
         elif [ -n "$RECURSE" ]; then
-            # might not work well for large directories, but should be killable in this case
+            # might not work well for large directories, but can be killed if troublesome
             for rec in $(find "$arg" | sort -r); do
-                $SELF "$rec"
+                $SELF --skip-non-empty-dir "$rec"
             done
         else
             rmdir --ignore-fail-on-non-empty "$arg"
@@ -78,7 +84,8 @@ if [ -n "$HELP" ]; then
     echo "Options (must preceed paths to have an effect):"
     echo "    -h\tPrint this message."
     echo "    -f\tDelete without confirmation."
-    echo "    -r\tRecursively remove a directory and its contents according to the usual rules (i.e. handle each contained file/folder according to the usual rules instead of prompting once for the entire directory)."
+    echo "    -r\tRecursively remove a directory and its contents, asking on each file found"
     echo "    -p\tAlso remove empty parent directories (as 'rmdir -p' does)"
+    echo "    --skip-non-empty-dir\tWhen encountering a non-empty directory, do not attempt to delete it."
     exit 1
 fi

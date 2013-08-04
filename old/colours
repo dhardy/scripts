@@ -1,0 +1,7 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+print "Colour codes:"
+for n in range(0,108):
+    print "\033[0;{0}m\\033[0;{0}m\t\033[1;{0}m\\033[1;{0}m".format(n)
+print "\033[0;00m"

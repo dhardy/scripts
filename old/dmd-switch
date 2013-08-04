@@ -1,0 +1,102 @@
+#!/bin/bash
+
+# Author: Diggory Hardy
+# License: public domain
+
+# This is a little script to switch your dmd.conf assuming you can switch between tango and phobos by simply swapping that file.
+# It expects dmd.conf and ONE of dmd.conf.phobos or dmd.conf.tango to exist and doesn't look at anything else (or even their contents).
+
+# Note: Use three import dirs: one for tango, one for phobos and one for common libraries. Make sure dsss uses the common library if you use dsss (otherwise it will constantly add an incorrect -I... switch). Use dmd.conf files something like mine, below.
+
+# As an example, here are my dmd.conf files:
+
+# tango:
+# [Environment]
+# DFLAGS=-I/usr/local/include/d -I/usr/local/include/d-tango -defaultlib=tango-base-dmd -debuglib=tango-base-dmd -version=Tango -version=Posix -L-ltango-user-dmd -L-L"%@P%/../lib"
+
+# phobos:
+# [Environment]
+# DFLAGS=-I/usr/local/include/d -I/usr/local/include/d-phobos -version=Posix -L-L/usr/local/lib
+
+PREFIX="/usr/local"
+SWITCH=""
+
+usage() {
+	echo 'Usage: dmd-switch [--prefix <install location>] [tango | phobos]
+If tango or phobos is given, dmd-switch will switch to that library. If neither is given, dmd-switch will just print which is currently installed.
+Options:
+	--prefix <dir>: Look for an install at <dir>, instead of the default path </usr/local>.'
+	exit 0
+}
+
+while [ "$#" != "0" ]
+do
+	if [ "$1" = "--prefix" ]
+	then
+		shift
+		PREFIX="$1"
+	elif [ "$1" = "tango" -o "$1" = "phobos" ]
+	then
+		SWITCH="$1"
+        else
+        	usage
+        fi
+	shift
+done
+
+if [ -e "$PREFIX/bin/dmd.conf.tango" -a -e "$PREFIX/bin/dmd.conf.phobos" ]
+then
+	echo "Error: Both $PREFIX/bin/dmd.conf.tango and $PREFIX/bin/dmd.conf.phobos exist! Only one should exist as a backup for the library which isn't in use."
+	exit 1
+fi
+
+if [ -e "$PREFIX/bin/dmd.conf.tango" ]
+then
+	CURRENT="phobos"
+elif [ -e "$PREFIX/bin/dmd.conf.phobos" ]
+then
+	CURRENT="tango"
+else
+	if [ -e "$PREFIX/bin/dmd.conf" ]
+	then
+		if [ "$SWITCH" == "" ]
+		then
+			echo "I don't know which is installed and have no way to install anything else."
+			exit 0
+                else
+			echo "Error: Neither $PREFIX/bin/dmd.conf.tango or $PREFIX/bin/dmd.conf.phobos exist! I don't know how to switch!"
+			exit 1
+                fi
+        else
+        	echo "Error: $PREFIX/bin/dmd.conf not found; dmd isn't installed properly under $PREFIX"
+        	exit 1
+        fi
+        #execution never reaches here.
+fi
+
+if [ "$SWITCH" = "" ]
+then
+	echo "The following library is currently installed: $CURRENT"
+elif [ "$SWITCH" = "$CURRENT" ]
+then
+	echo "$CURRENT is already installed!"
+else
+	if [ "$CURRENT" = phobos ]
+	then
+		mv $PREFIX/bin/dmd.conf $PREFIX/bin/dmd.conf.phobos
+        elif [ "$CURRENT" = tango ]
+        then
+        	mv $PREFIX/bin/dmd.conf $PREFIX/bin/dmd.conf.tango
+        fi
+        
+        if [ "$SWITCH" = phobos ]
+        then
+        	mv $PREFIX/bin/dmd.conf.phobos $PREFIX/bin/dmd.conf
+		echo "profile=dmd-posix" > /usr/local/etc/rebuild/default
+        elif [ "$SWITCH" = tango ]
+        then
+        	mv $PREFIX/bin/dmd.conf.tango $PREFIX/bin/dmd.conf
+		echo "profile=dmd-posix-tango" > /usr/local/etc/rebuild/default
+        fi
+        echo "Switched to $SWITCH."
+fi

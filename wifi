@@ -1,0 +1,6 @@
+#!/bin/sh
+
+echo "Use rfkill to enable/disable wifi and bluetooth. For example:"
+echo "rfkill block bluetooth"
+echo "rfkill unblock wifi"
+

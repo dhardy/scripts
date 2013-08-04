@@ -1,0 +1,5 @@
+#!/bin/sh
+#remove KDE NM
+qdbus org.kde.kded /kded unloadModule networkmanagement
+nm-applet &
+

@@ -15,7 +15,7 @@ setxkbmap -layout cyborg16,cyborg16\
     -variant colemak_ch,basic\
     -option grp:sclk_toggle,grp_led:caps,compose:menu\
     -model thinkpad60\
-    -print | xkbcomp - $DISPLAY
+#    -print | xkbcomp - $DISPLAY
 #,lv3:rwin_switch,lv3:ralt_switch
 
 # enable key repeat on capslock (still needs to be done repeatedly?)
@@ -28,6 +28,7 @@ then
 fi
 if [ -f ~/.xbindkeysrc ]
 then
+        killall xbindkeys
 	xbindkeys
 fi
 

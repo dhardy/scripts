@@ -16,7 +16,8 @@ from unipath import Path
 # ———  definitions  ———
 # Put locations to backup here:
 #sources=["/home/"]#,"/"]
-sources=["/home/dhardy/rtest/source/"]
+#sources=["/home/dhardy/rtest/source/"]
+sources=["/"]
 # and, for each location, a list of exclude rules. See rsync manual for details,
 # but in brief: patterns starting with a slash like "/foo" are paths relative
 # to the source directory, patterns ending with a slash like "somedir/" match
@@ -28,9 +29,11 @@ sources=["/home/dhardy/rtest/source/"]
     #"*.o","*.class"]#,
     ##["/dev/", "/media/", "/proc/", "/tmp/", "/var/tmp/", "/var/cache/"]
 #]
-excludes = [["/r3", "r2"]]
+#exclude_files = ["/home/dhardy/rtest/excludes"]
+exclude_files=[""]
 # set to true to check every file with a checksum
 checksum=True
+rsync="/home/dhardy/download/rsync-3.0.9/rsync"
 
 #  ———  functions  ———
 
@@ -42,7 +45,7 @@ def call_command(command, pipe=None):
     output=process.communicate(input=pipe)
     return output
 
-def do_backup(source,backup_dest,excludes):
+def do_backup(source,backup_dest,exclude_file):
     bpath=backup_dest.child(bname)
     bptmp=backup_dest.child(btmp)
     if bpath.exists():
@@ -65,16 +68,17 @@ def do_backup(source,backup_dest,excludes):
     other args:
     --verbose --progress --itemize-changes
     """
-    args=["rsync",
+    args=[rsync,
         "--one-file-system",
         "--archive","--hard-links","--human-readable","--inplace","--numeric-ids",
         "--delete","--delete-excluded"]
-    for exclude in excludes:
-        args += ["--exclude=\""+exclude+"\""]
+    exclude_path=Path(exclude_file)
+    if exclude_path.exists():
+        args += ["exclude-from="+exclude_path.absolute()]
     if checksum:
         args += ["--checksum"]
     if prevComplete.isdir():
-        args += ["--link-dest="+prevComplete]
+        args += ["--link-dest="+prevComplete.absolute()]
     args += [source,bptmp]
     subprocess.call(["echo"]+args)
     retcode = subprocess.call(args)
@@ -91,9 +95,9 @@ def do_backup(source,backup_dest,excludes):
 
 #  ———  script  ———
 
-if int(call_command("id -u")[0]) != 0:
-    print "Please run as root."
-    sys.exit(1)
+#if int(call_command("id -u")[0]) != 0:
+    #print "Please run as root."
+    #sys.exit(1)
 
 dest = None
 if len(sys.argv) == 2:
@@ -114,4 +118,4 @@ for i in range(len(sources)):
     else:
         sdest = dest.child(Path(source.rstrip('/')).name)
     sdest.mkdir()
-    do_backup(source,sdest,excludes[i])
+    do_backup(source,sdest,exclude_files[i])

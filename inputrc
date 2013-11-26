@@ -1,0 +1,4 @@
+#from : http://wiki.archlinux.org/index.php/Bash
+
+"\e[A":history-search-backward
+"\e[B":history-search-forward

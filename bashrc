@@ -105,6 +105,8 @@ alias gd='git diff'
 alias gdc='git diff --cached'
 alias gc='git commit'
 alias gb='git branch'
+alias gcp='git checkout -p --'
+alias grH='git reset HEAD --'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -140,7 +142,7 @@ alias vi=vim
 #PS1='[\u@\h \W]\$ '
 
 if [ -d $HOME/.local/bin ]; then
-    export PATH=$HOME/.local/bin:$PATH
+    export PATH=$HOME/.local/bin:$PATH:/home/install/rust/bin
 fi
 
 # make git log interact better:

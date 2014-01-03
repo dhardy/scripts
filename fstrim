@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# Script to do SSD trim operations
+# Based on: http://askubuntu.com/questions/18903/how-to-enable-trim
+# Should be placed in /etc/cron.hourly or /etc/cron.daily and be executable
+
+if [ "$(cat /sys/class/power_supply/ADP1/online)" = "0" ]
+then
+    # running off the battery: abort
+    exit 0
+fi
+
+# all mount points of SSD drives:
+SSD_MOUNT_POINTS='/ /boot /home'
+
+for mount_point in $SSD_MOUNT_POINTS
+do  
+    fstrim $mount_point  
+done

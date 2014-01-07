@@ -1,0 +1,48 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides:
+# Should-Start:
+# Short-Description: a few power optimisations
+### END INIT INFO
+
+. /etc/init.d/functions
+
+case "$1" in
+start)
+    # These are powertop's suggested tweaks:
+
+    echo '1500' > '/proc/sys/vm/dirty_writeback_centisecs'
+    echo 'min_power' > '/sys/class/scsi_host/host0/link_power_management_policy'
+    echo 'min_power' > '/sys/class/scsi_host/host1/link_power_management_policy'
+    echo '1' > '/sys/module/snd_hda_intel/parameters/power_save'
+    echo '0' > '/proc/sys/kernel/nmi_watchdog'
+    # warning: this can cause some USB input devices to respond less well to input:
+#     for d in /sys/bus/usb/devices/*
+#     do
+#         if [ -w "$d/power/control" ];
+#         then
+#             echo 'auto' > "$d/power/control"
+#         fi
+#     done
+    for d in /sys/bus/pci/devices/*
+    do
+        if [ -w "$d/power/control" ];
+        then
+            echo 'auto' > "$d/power/control"
+        fi
+    done
+    ;;
+stop)
+    echo "No stop implemented"
+    ;;
+status)
+    echo "No status"
+    ;;
+restart|reload|force-reload)
+    cd "$CWD"
+    $0 start
+    ;;
+*)
+    echo "Usage: $0 start"
+esac

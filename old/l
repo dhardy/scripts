@@ -1,0 +1,33 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+# Program to call either ls or less
+
+import os.path
+import subprocess
+import sys
+
+def main(args):
+    ndirs=0
+    nfiles=0
+    for arg in args[1:]:
+        if len(arg)>=2 and arg[0]=='-':
+            continue
+        if os.path.isfile(arg):
+            nfiles+=1
+        elif os.path.isdir(arg):
+            ndirs+=1
+        else:
+            print "Not a file or directory:",arg
+            print "Usage:",args[0],"PATH [PATH [...]]"
+            print "where PATH is a file or directory. ls or less is called appropriately."
+            return -1
+    print nfiles,"files and",ndirs,"dirs"
+    if ndirs==0 and nfiles>0:
+        """at least one file but no directory: less"""
+        return subprocess.call(["less"]+args[1:])
+    else:
+        """no args or args include dirs: ls"""
+        return subprocess.call(["ls","--color=auto"]+args[1:])
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv))

@@ -1,0 +1,47 @@
+#!/bin/bash
+
+DISPER=$(which disper 2>/dev/null)
+XRANDR=$(which xrandr 2>/dev/null)
+NVSETTINGS=$(which nvidia-settings 2>/dev/null)
+XRANDR_ROT="-o normal"
+
+XRANDR_L="$(xrandr | grep LVDS | cut -d' ' -f1)"
+# this may be DP2 or something else:
+XRANDR_E="$(xrandr | egrep "^DP.*\bconnected\b" | cut -d' ' -f1)"
+
+if [ "$1" = "l" ]
+then
+    echo "Switching to laptop display"
+    DISPER_OPT="-s"
+    XRANDR_OPT="--output $XRANDR_L --auto --output $XRANDR_E --off"
+elif [ "$1" = "e" ] || [ "$1" = "d" ]
+then
+    echo "Switching to dock display"
+    DISPER_OPT="-S"
+    XRANDR_OPT="--output $XRANDR_E --auto --output $XRANDR_L --off"
+else
+    echo "Usage: $0 D [R]"
+    echo "where D is l for laptop display or d for dock display"
+    echo "and R is l for "left" portrait orientation"
+    echo "Listing displays:"
+    DISPER_OPT="-l"
+    XRANDR_OPT=""
+    XRANDR_ROT=""
+fi
+if [ "$2" = "l" ]
+then
+    echo "Orientation: left"
+    XRANDR_ROT="-o left"
+fi
+
+#TODO: apparently this tries executing nvidia-settings when it's not found:
+if [ -f "$NVSETTINGS" -a "$(nvidia-settings --glxinfo | grep NVIDIA)x" != "x" ]
+then
+    echo "Detected NVIDIA driver, using disper" >&2
+    $DISPER $DISPER_OPT
+    $XRANDR $XRANDR_ROT
+else
+    echo "Using xrandr" >&2
+    $XRANDR $XRANDR_OPT $XRANDR_ROT
+fi
+

@@ -137,9 +137,8 @@ if ! shopt -oq posix; then
 fi
 
 # vim stuff
-export EDITOR=vim
+export EDITOR=vi
 export VISUAL=kwrite
-alias vi=vim
 
 # prompt
 #PS1='\[\e[1;46m\e[1;37m\]\h \W\[\e[00;00m\]\$ '

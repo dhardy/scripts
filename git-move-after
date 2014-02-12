@@ -1,0 +1,27 @@
+#!/bin/sh
+# Usage: after moving a file, this moves it back then invokes git mv.
+# Use case: it makes git aware of the new paths without adding file changes
+# into the index, thus allowing "git diff" or "git add -p".
+
+if [[ "$#" -ne 2 ]]; then
+    echo "Usage: $0 old-path new-path"
+    exit 2
+fi
+
+if [[ -e "$1" ]]; then
+    echo "Error: $1 exists"
+    exit 1
+fi
+
+TEMP_DIR=0
+if [[ ! -d "$(dirname "$1")" ]]; then
+    mkdir -p "$(dirname "$1")"
+    TEMP_DIR=1
+fi
+
+mv "$2" "$1" || exit 1
+git mv "$1" "$2" || exit 1
+
+if [[ $TEMP_DIR -eq 1 ]]; then
+    rmdir -p --ignore-fail-on-non-empty "$(dirname "$1")"
+fi

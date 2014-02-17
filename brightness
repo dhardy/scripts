@@ -1,0 +1,14 @@
+#!/bin/sh
+if [ $# -eq 0 ]; then
+	for d in /sys/class/backlight/*; do
+		echo "$d: $(cat "$d/brightness")"
+	done
+elif [ $# -eq 1 ]; then
+	for d in /sys/class/backlight/*; do
+		echo $1 > "$d/brightness"
+	done
+else
+	echo "Usage: $0 [level]"
+	exit 1
+fi
+

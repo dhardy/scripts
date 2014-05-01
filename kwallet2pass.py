@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2012 Juhamatti Niemelä <iiska@iki.fi>. All Rights Reserved.
+# Copyright 2014 Diggory Hardy
 # This file is licensed under the GPLv2+. Please see COPYING for more information.
 
 import sys

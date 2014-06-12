@@ -111,6 +111,8 @@ alias grH='git reset HEAD --'
 alias gr='git remote'
 alias grv='git remote -v'
 alias gba='git branch -a'
+alias go='git checkout '
+alias gh='git hist' #relies on a git config item
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert

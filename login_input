@@ -14,9 +14,19 @@
 setxkbmap -layout cyborg16,cyborg16\
     -variant colemak4_ch,basic\
     -option grp:sclk_toggle,grp_led:caps,compose:menu,compose:prsc\
-    -model thinkpad60\
+    -model pc105\
 #    -print | xkbcomp - $DISPLAY
 #,lv3:rwin_switch,lv3:ralt_switch
+
+# swap page up/down and home/end on new thinkpad
+# TODO: this really the ID for the new Thinkpad keyboard (~2013)?
+DEVICE=$(xinput list | egrep 'AT Translated Set 2 keyboard' | egrep 'id=[0-9]+' -o | cut -d= -f2)
+if [ ! "x$DEVICE" = x ]; then
+#TODO: can the model not affect these keys?
+#     echo "Swapping page up/down with home/end on device $DEVICE"
+#     setxkbmap -device $DEVICE -model swap_pgupdn_homeend
+    echo -n "";
+fi
 
 # enable key repeat on capslock (still needs to be done repeatedly?)
 xset r 66

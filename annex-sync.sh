@@ -15,7 +15,7 @@ shift
 if [ "$#" -gt "0" ]; then
     REPOS="$@"
 else
-    REPOS="/home/dhardy/annex /home/dhardy/pictures/photos /home/dhardy/swisstph/docs"
+    REPOS="/home/dhardy/annex /home/dhardy/pictures/photos /home/dhardy/swisstph/docs /home/dhardy/Documents /home/dhardy/small"
 fi
 
 sync(){

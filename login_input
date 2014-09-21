@@ -12,7 +12,7 @@
 #model is logitech_g15 or thinkpad60
 # updates seem to be missed without piping to xkbcomp
 setxkbmap -layout cyborg16,ch\
-    -variant colemak4_ch,de\
+    -variant workman4_ch,de\
     -option grp:sclk_toggle,grp_led:caps,compose:menu,compose:prsc\
     -model pc105\
 #    -print | xkbcomp - $DISPLAY

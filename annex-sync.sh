@@ -31,5 +31,9 @@ sync(){
 }
 
 for repo in $REPOS; do
-    sync "$repo"
+    if [ -d "$repo" ]; then
+        sync "$repo"
+    else
+        echo "Skipping missing repository: $repo"
+    fi
 done

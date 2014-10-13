@@ -5,10 +5,8 @@
 # How to use: run from directory to backup, first argument should be destination for backups
 # Author: Diggory Hardy
 
-# WARNING: this is still experimental (I am not familiar with dar)
+# NOTE: this has had only a little testing so far, but all features do appear to work.
 
-# TODO: test exclude rules (e.g. .o, .cache, .ccache)
-# TODO: fix links
 
 # ———  configuration  ———
 
@@ -29,6 +27,7 @@ DAR_OPTS="-zlzo:9"
 
 # ———  end of configuration section  ———
 
+# Add exclude rules. Warning: do not use -g the same way; we use it below to select what to back up.
 for ef in $EXCLUDE_FILES; do
     DAR_OPTS="$DAR_OPTS -X $ef"
 done
@@ -79,19 +78,20 @@ exclude_top(){
 
 link_latest(){
     # $1: local name of backup minus extension
-    LATEST="DEST_LATEST/$1.dar"
+    LATEST="$DEST_LATEST/$1.1.dar"
     if [ -L "LATEST" ]; then
         rm -f "$LATEST" || return 1
     fi
-    ln -s "../$NOW/$1.dar" "$LATEST" || return 1
+    ln -s "../$NOW/$1.1.dar" "$LATEST" || return 1
 }
 
 backup_dir(){
         echo "Backing up $1 ..." &&\
-        echo $DAR -c "$DEST_NOW/$1" $DAR_OPTS $1 &&\
-        $DAR -c "$DEST_NOW/$1" $DAR_OPTS $1 &&\
+        echo $DAR -c "$DEST_NOW/$1" $DAR_OPTS -g $1 &&\
+        $DAR -c "$DEST_NOW/$1" $DAR_OPTS -g $1 &&\
         link_latest "$1" &&\
         echo "Done backing up $1"
+        echo # extra new line
 }
 
 MISC_FILES=""
@@ -106,15 +106,22 @@ for f in $(ls -A); do
 done
 
 N=0
-MISC_DEST="$DEST_NOW/misc"
-while [ -e "$MISC_DEST.dar" ]; do
+MISC_DEST="misc"
+while [ -e "$DEST_NOW/$MISC_DEST.1.dar" ]; do
     let N=N+1
-    MISC_DEST="$DEST_NOW/misc-$N"
+    MISC_DEST="misc-$N"
 done
-echo "Backing up miscellaneous files to: $MISC_DEST"
-echo $DAR -c "$MISC_DEST" $DAR_OPTS $MISC_FILES &&\
 # FIXME This will probably fail on files with spaces in the name:
-$DAR -c "$MISC_DEST" $DAR_OPTS $MISC_FILES &&\
-link_latest "$MISC_DEST"
-echo "Done backing up miscellaneous files."
+MISC_ARGS=""
+for mf in $MISC_FILES; do
+    MISC_ARGS="$MISC_ARGS -g $mf"
+done
+if [ "x$MISC_ARGS" != "x" ]; then
+    echo "Backing up miscellaneous files to: $MISC_DEST"
+    echo $DAR -c "$DEST_NOW/$MISC_DEST" $DAR_OPTS $MISC_ARGS &&\
+    $DAR -c "$DEST_NOW/$MISC_DEST" $DAR_OPTS $MISC_ARGS &&\
+    link_latest "$MISC_DEST"
+    echo "Done backing up miscellaneous files."
+fi
+
 echo "Backup finished. Links to the latest backup can be found in: $DEST_LATEST"

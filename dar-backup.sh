@@ -1,11 +1,40 @@
 #!/bin/sh
-# What: create a backup using dar
-# How: run from directory to backup, first argument should be destination for backups
+# What: create a backup using dar. Rather than create a single backup archive it
+# creates one for each directory of the current directory, plus an additional
+# "misc" archive for files not in a subdirectory.
+# How to use: run from directory to backup, first argument should be destination for backups
 # Author: Diggory Hardy
 
 # WARNING: this is still experimental (I am not familiar with dar)
 
-# TODO: exclude rules (e.g. .o, .cache, .ccache)
+# TODO: test exclude rules (e.g. .o, .cache, .ccache)
+# TODO: fix links
+
+# ———  configuration  ———
+
+# NOTE: you may with to change the include/exclude rules.
+# See dar manual; not all rules are implemented here.
+
+# This is a space-separated list of globs of file names to exclude.
+EXCLUDE_FILES="*.o"
+
+# This is a space-separated list of top-level files and directories to exclude from the backup.
+EXCLUDE_TOP=".cache .ccache .bash_history .thumbnails"
+
+# This is a space-separated list of globs of paths to exclude.
+EXCLUDE_PATHS=".local/share/akonadi .local/share/baloo"
+
+# Additional options. You can specify compression here, e.g. -zlzo:9 or -zgzip:1 .
+DAR_OPTS="-zlzo:9"
+
+# ———  end of configuration section  ———
+
+for ef in $EXCLUDE_FILES; do
+    DAR_OPTS="$DAR_OPTS -X $ef"
+done
+for ep in $EXCLUDE_PATHS; do
+    DAR_OPTS="$DAR_OPTS -P $ep"
+done
 
 if [ "$#" -ne "1" ]; then
     echo "Usage: $0 DEST"
@@ -27,7 +56,7 @@ if [ ! -x "$DAR" ]; then
 fi
 
 DEST="$1"
-NOW="$(date -u -Ihours)"
+NOW="$(date -Ihours)"
 DEST_NOW="${DEST}/$NOW"
 DEST_LATEST="${DEST}/latest"
 
@@ -37,6 +66,16 @@ fi
 mkdir -p "$DEST_NOW" || die "Error creating $DEST_NOW"
 mkdir -p "$DEST_LATEST" || die "Error creating $DEST_LATEST"
 echo "Backup destination: $DEST_NOW"
+
+# return 0 (true) if $1 is in EXCLUDE_TOP, otherwise 1 (false)
+exclude_top(){
+    for e in $EXCLUDE_TOP; do
+        if [ "$1" = "$e" ]; then
+            return 0    # match, return true
+        fi
+    done
+    return 1    # no match, return false
+}
 
 link_latest(){
     # $1: local name of backup minus extension
@@ -48,16 +87,19 @@ link_latest(){
 }
 
 backup_dir(){
-    echo "Backing up $1 ..." &&\
-    $DAR -c "$DEST_NOW/$1" $1 &&\
-    link_latest "$1" &&\
-    echo "Done backing up $1"
+        echo "Backing up $1 ..." &&\
+        echo $DAR -c "$DEST_NOW/$1" $DAR_OPTS $1 &&\
+        $DAR -c "$DEST_NOW/$1" $DAR_OPTS $1 &&\
+        link_latest "$1" &&\
+        echo "Done backing up $1"
 }
 
 MISC_FILES=""
 for f in $(ls -A); do
-    if [ -d "$f" ]; then
-        backup_dir "$f"
+    if exclude_top $f; then
+        echo "Excluding: $f"
+    elif [ -d "$f" ]; then
+        backup_dir "$f" || echo "Error occurred; skipping: $f"
     else
         MISC_FILES="$MISC_FILES $f"
     fi
@@ -70,9 +112,9 @@ while [ -e "$MISC_DEST.dar" ]; do
     MISC_DEST="$DEST_NOW/misc-$N"
 done
 echo "Backing up miscellaneous files to: $MISC_DEST"
-echo "Files:$MISC_FILES"
+echo $DAR -c "$MISC_DEST" $DAR_OPTS $MISC_FILES &&\
 # FIXME This will probably fail on files with spaces in the name:
-$DAR -c "$MISC_DEST" $MISC_FILES &&\
+$DAR -c "$MISC_DEST" $DAR_OPTS $MISC_FILES &&\
 link_latest "$MISC_DEST"
 echo "Done backing up miscellaneous files."
 echo "Backup finished. Links to the latest backup can be found in: $DEST_LATEST"

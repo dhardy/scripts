@@ -20,7 +20,10 @@ EXCLUDE_FILES="*.o"
 EXCLUDE_TOP=".cache .ccache .bash_history .thumbnails"
 
 # This is a space-separated list of globs of paths to exclude.
-EXCLUDE_PATHS=".local/share/akonadi .local/share/baloo"
+EXCLUDE_PATHS=".local/share/akonadi .local/share/baloo .kde/share/apps/nepomuk .Idea*/system"
+
+# File globs not to compress
+NO_COMPRESSION="*.gz *.bz2 *.zip *.png *.jpg *.jpeg"
 
 # Additional options. You can specify compression here, e.g. -zlzo:9 or -zgzip:1 .
 DAR_OPTS="-zlzo:9"
@@ -33,6 +36,9 @@ for ef in $EXCLUDE_FILES; do
 done
 for ep in $EXCLUDE_PATHS; do
     DAR_OPTS="$DAR_OPTS -P $ep"
+done
+for nc in $NO_COMPRESSION; do
+    DAR_OPTS="$DAR_OPTS -Z $nc"
 done
 
 if [ "$#" -ne "1" ]; then
@@ -98,7 +104,8 @@ MISC_FILES=""
 for f in $(ls -A); do
     if exclude_top $f; then
         echo "Excluding: $f"
-    elif [ -d "$f" ]; then
+    elif [ -d "$f" -a ! -L "$f" ]       # directory and not a link
+    then
         backup_dir "$f" || echo "Error occurred; skipping: $f"
     else
         MISC_FILES="$MISC_FILES $f"

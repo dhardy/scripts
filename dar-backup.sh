@@ -84,11 +84,13 @@ exclude_top(){
 
 link_latest(){
     # $1: local name of backup minus extension
-    LATEST="$DEST_LATEST/$1.1.dar"
-    if [ -L "LATEST" ]; then
-        rm -f "$LATEST" || return 1
-    fi
-    ln -s "../$NOW/$1.1.dar" "$LATEST" || return 1
+    # FIXME This will probably fail on files with spaces in the name:
+    for l in $DEST_LATEST/$1.*.dar; do
+        rm -f "$l" || return 1
+    done
+    for l in $DEST_NOW/$1.*.dar; do
+        ln -s "../$NOW/$(basename "$l")" "$DEST_LATEST/$(basename "$l")" || return 1
+    done
 }
 
 backup_dir(){

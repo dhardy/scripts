@@ -1,0 +1,24 @@
+[alias]
+	a = add
+	b = branch
+	h = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+	l = log
+	cfg = config
+	an = annex
+	r = remote
+	s = status
+	d = diff
+	hist = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+	hs = log --pretty=format:\"%h %ad | %s%d [%an]\" --graph --date=short
+[push]
+	default = simple
+[url "git://anongit.kde.org/"]
+    insteadOf = kde:
+[url "git@git.kde.org:"] 
+    pushInsteadOf = kde: 
+[annex]
+	numcopies = 2
+	diskreserve = 100 mb
+
+[merge]
+	tool = kdiff3

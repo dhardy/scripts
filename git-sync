@@ -1,0 +1,45 @@
+#!/bin/sh
+# What: sync several git repos to some common remote
+# How: git-sync myremote repo1 path/to/repo2
+# Assumption: remotes are configured; remotes do not have uncommitted data;
+# remotes are bare (i.e. not necessary to update their working trees)
+# Author: Diggory Hardy
+
+if [ "$#" -lt "1" ]; then
+    echo "Usage: $0 REMOTE [REPO] [REPO...]"
+    exit 1
+fi
+
+REMOTE=$1
+shift
+if [ "$#" -gt "0" ]; then
+    REPOS="$@"
+else
+    echo "Usage: $0 REMOTE [REPO] [REPO...]"
+    exit 1
+fi
+
+sync(){
+    echo "Synching $1 ..." && \
+    cd "$1" && \
+    if [ "$(git status -uno -s | wc -l)" -gt "0" ]; then
+        echo "Warning: uncommitted changes"
+        git fetch $REMOTE && \
+        git push --all $REMOTE || \
+        echo "Sync failure"
+    else
+        git pull --ff-only $REMOTE $(git branch|cut -d' ' -f2) && \
+        git push --all $REMOTE || \
+        echo "Sync failure"
+    fi
+}
+
+CWD="$(pwd)"
+for repo in $REPOS; do
+    cd "$CWD"
+    if [ -d "$repo" ]; then
+        sync "$repo"
+    else
+        echo "Skipping missing repository: $repo"
+    fi
+done

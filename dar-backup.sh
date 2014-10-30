@@ -20,10 +20,13 @@ EXCLUDE_FILES="*.o"
 EXCLUDE_TOP=".cache .ccache .bash_history .thumbnails"
 
 # This is a space-separated list of globs of paths to exclude.
-EXCLUDE_PATHS=".local/share/akonadi .local/share/baloo .kde/share/apps/nepomuk .Idea*/system"
+EXCLUDE_PATHS=".local/share/Trash .local/share/akonadi .local/share/baloo .kde/share/apps/nepomuk .Idea*/system"
 
 # File globs not to compress
 NO_COMPRESSION="*.gz *.bz2 *.zip *.png *.jpg *.jpeg"
+
+# 0 or 1 : if set, backups are relative to the previous backup
+RELATIVE_BACKUPS="1"
 
 # Additional options. You can specify compression here, e.g. -zlzo:9 or -zgzip:1 .
 DAR_OPTS="-zlzo:9"
@@ -94,12 +97,18 @@ link_latest(){
 }
 
 backup_dir(){
-        echo "Backing up $1 ..." &&\
-        echo $DAR -c "$DEST_NOW/$1" $DAR_OPTS -g $1 &&\
-        $DAR -c "$DEST_NOW/$1" $DAR_OPTS -g $1 &&\
-        link_latest "$1" &&\
-        echo "Done backing up $1"
-        echo # extra new line
+    if [ "$RELATIVE_BACKUPS" -eq "1" -a -f "$DEST_LATEST/$1.1.dar" ]; then
+        echo "Backing up $1 (relative mode) ..."
+        OPTS="$DAR_OPTS -A $DEST_LATEST/$1"
+    else
+        echo "Backing up $1 (standalone backup) ..."
+        OPTS="$DAR_OPTS"
+    fi
+    echo $DAR -c "$DEST_NOW/$1" $OPTS -g $1 &&\
+    $DAR -c "$DEST_NOW/$1" $OPTS -g $1 &&\
+    link_latest "$1" &&\
+    echo "Done backing up $1"
+    echo # extra new line
 }
 
 MISC_FILES=""

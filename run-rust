@@ -1,0 +1,14 @@
+#!/bin/sh
+RUST_HOME=/home/install/rust
+PROG=$(basename $0)
+if [ ! -x "$RUST_HOME/bin/$PROG" ]; then
+    echo "Usage: make a symlink with one of the following names and execute that."
+    ls "$RUST_HOME/bin"
+    exit 1
+fi
+
+export PATH="$PATH:$RUST_HOME/bin"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$RUST_HOME/lib"
+
+$RUST_HOME/bin/$PROG $@
+

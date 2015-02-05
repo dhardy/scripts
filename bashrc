@@ -157,7 +157,6 @@ export LESS=R
 
 export ANDROID_HOME=/home/install/android-sdk-linux
 export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:/home/install/rust/bin"
-export JAVA_HOME=/usr/lib/jvm/java
-
-alias vim=vi
+#export JAVA_HOME=/usr/lib/jvm/java
+export JAVA_HOME=/usr/java/default
 

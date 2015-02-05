@@ -29,7 +29,8 @@ NO_COMPRESSION="*.gz *.bz2 *.zip *.png *.jpg *.jpeg"
 RELATIVE_BACKUPS="1"
 
 # Additional options. You can specify compression here, e.g. -zlzo:9 or -zgzip:1 .
-DAR_OPTS="-zlzo:9"
+# Disable the SECURITY WARNING which it seems is falsely triggered by git-annex
+DAR_OPTS="-zlzo:9 --alter=secu"
 
 # ———  end of configuration section  ———
 

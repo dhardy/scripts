@@ -1,0 +1,4 @@
+#!/bin/sh
+N=$(xinput|grep -i touchscreen|grep -o "id=[0-9]*" | grep -o "[0-9]*")
+xinput --map-to-output $N eDP1
+

@@ -113,7 +113,7 @@ alias grH='git reset HEAD --'
 alias gr='git remote'
 alias grv='git remote -v'
 alias gba='git branch -a'
-alias go='git checkout '
+#alias go='git checkout '
 alias gh='git hist' #relies on a git config item
 
 # Add an "alert" alias for long running commands.  Use like so:
@@ -159,4 +159,5 @@ export ANDROID_HOME=/home/install/android-sdk-linux
 export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:/home/install/rust/bin"
 #export JAVA_HOME=/usr/lib/jvm/java
 export JAVA_HOME=/usr/java/default
+export GOPATH=/home/dhardy/go
 

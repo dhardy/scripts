@@ -113,7 +113,7 @@ alias grH='git reset HEAD --'
 alias gr='git remote'
 alias grv='git remote -v'
 alias gba='git branch -a'
-alias go='git checkout '
+#alias go='git checkout '
 alias gh='git hist' #relies on a git config item
 
 alias mc.net='ssh africa@malariacontrol.net'
@@ -164,4 +164,5 @@ export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:/home/instal
 #export JAVA_HOME=/usr/lib/jvm/java
 export JAVA_HOME=/usr/java/default
 export PYTHONPATH=~/.py-site-packages
+export GOPATH=/home/dhardy/go
 

@@ -116,6 +116,10 @@ alias gba='git branch -a'
 alias go='git checkout '
 alias gh='git hist' #relies on a git config item
 
+alias mc.net='ssh africa@malariacontrol.net'
+alias kumbo='ssh africa@kumbo.tph.unibas.ch'
+alias macmini='ssh africa@131.152.193.129'
+
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
@@ -159,4 +163,5 @@ export ANDROID_HOME=/home/install/android-sdk-linux
 export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:/home/install/rust/bin"
 #export JAVA_HOME=/usr/lib/jvm/java
 export JAVA_HOME=/usr/java/default
+export PYTHONPATH=~/.py-site-packages
 

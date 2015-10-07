@@ -153,14 +153,14 @@ export VISUAL=kwrite
 #PS1='[\u@\h \W]\$ '
 
 if [ -d $HOME/.local/bin ]; then
-    export PATH=$HOME/.local/bin:$PATH:/home/install/rust/bin
+    export PATH=$HOME/.local/bin:$PATH
 fi
 
 # make git log interact better:
 export LESS=R
 
-export ANDROID_HOME=/home/install/android-sdk-linux
-export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:/home/install/rust/bin"
+#export ANDROID_HOME=/home/install/android-sdk-linux
+#export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:/home/install/rust/bin"
 #export JAVA_HOME=/usr/lib/jvm/java
 export JAVA_HOME=/usr/java/default
 export PYTHONPATH=~/.py-site-packages

@@ -10,5 +10,5 @@ fi
 export PATH="$PATH:$RUST_HOME/bin"
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$RUST_HOME/lib"
 
-$RUST_HOME/bin/$PROG $@
+$RUST_HOME/bin/$PROG "$@"
 

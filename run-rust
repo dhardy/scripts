@@ -1,6 +1,8 @@
 #!/bin/sh
 RUST_HOME=/home/install/rust
+# CARGO_HOME=/home/install/cargo
 PROG=$(basename $0)
+
 if [ ! -x "$RUST_HOME/bin/$PROG" ]; then
     echo "Usage: make a symlink with one of the following names and execute that."
     ls "$RUST_HOME/bin"
@@ -10,5 +12,9 @@ fi
 export PATH="$PATH:$RUST_HOME/bin"
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$RUST_HOME/lib"
 
-$RUST_HOME/bin/$PROG $@
-
+if [ -x "$CARGO_HOME/bin/$PROG" ]; then
+    export PATH="$PATH:$CARGO_HOME/bin"
+    "$CARGO_HOME/bin/$PROG" $@
+else
+    "$RUST_HOME/bin/$PROG" $@
+fi

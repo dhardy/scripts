@@ -14,7 +14,7 @@ export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$RUST_HOME/lib"
 
 if [ -x "$CARGO_HOME/bin/$PROG" ]; then
     export PATH="$PATH:$CARGO_HOME/bin"
-    "$CARGO_HOME/bin/$PROG" $@
+    "$CARGO_HOME/bin/$PROG" "$@"
 else
-    "$RUST_HOME/bin/$PROG" $@
+    "$RUST_HOME/bin/$PROG" "$@"
 fi

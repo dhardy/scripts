@@ -159,8 +159,8 @@ fi
 # make git log interact better:
 export LESS=R
 
-# export ANDROID_HOME=/home/install/android-sdk-linux
-# export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:/home/install/rust/bin"
+#export ANDROID_HOME=/home/install/android-sdk-linux
+#export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:/home/install/rust/bin"
 #export JAVA_HOME=/usr/lib/jvm/java
 export JAVA_HOME=/usr/java/default
 export PYTHONPATH=~/.py-site-packages

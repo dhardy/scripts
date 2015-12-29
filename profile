@@ -26,5 +26,5 @@ rfkill block bluetooth
 rfkill unblock wifi
 
 # from tzselect:
-TZ='Europe/Zurich'; export TZ
+# TZ='Europe/Zurich'; export TZ
 

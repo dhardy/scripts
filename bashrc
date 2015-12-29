@@ -165,4 +165,4 @@ export LESS=R
 export JAVA_HOME=/usr/java/default
 export PYTHONPATH=~/.py-site-packages
 export GOPATH=/home/dhardy/go
-
+export RUST_SRC_PATH=/home/dhardy/other/rust/src

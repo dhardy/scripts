@@ -1,25 +1,32 @@
 #!/bin/bash
+# Axes swap stuff doesn't seem to work anymore
+# https://wiki.ubuntu.com/X/InputCoordinateTransformation
+
 ARG=$1
 CMD=${ARG:0:1}
 case $CMD in
     r) 
         xrandr --screen 0 -o right
+        xinput set-prop "ELAN Touchscreen" "Coordinate Transformation Matrix" 0 1 0 -1 0 1 0 0 1
         xinput set-prop --type=int --format=8 "ELAN Touchscreen" "Evdev Axes Swap" 1
         xinput set-prop --type=int --format=8 "ELAN Touchscreen" "Evdev Axis Inversion" 0 1
         ;;
     l)
         xrandr --screen 0 -o left
-        xinput set-prop --type=int --format=8 "ELAN Touchscreen" "Evdev Axes Swap" 1
-        xinput set-prop --type=int --format=8 "ELAN Touchscreen" "Evdev Axis Inversion" 1 0
+        xinput set-prop "ELAN Touchscreen" "Coordinate Transformation Matrix" 0 -1 1 1 0 0 0 0 1
+#         xinput set-prop --type=int --format=8 "ELAN Touchscreen" "Evdev Axes Swap" 1
+#         xinput set-prop --type=int --format=8 "ELAN Touchscreen" "Evdev Axis Inversion" 1 0
         ;;
     i)
         xrandr --screen 0 -o inverted
+        xinput set-prop "ELAN Touchscreen" "Coordinate Transformation Matrix" -1 0 1 0 -1 1 0 0 1
         xinput set-prop --type=int --format=8 "ELAN Touchscreen" "Evdev Axes Swap" 0
         xinput set-prop --type=int --format=8 "ELAN Touchscreen" "Evdev Axis Inversion" 1 1
         ;;
     *)
         xrandr --screen 0 -o normal 
-        xinput set-prop --type=int --format=8 "ELAN Touchscreen" "Evdev Axes Swap" 0
-        xinput set-prop --type=int --format=8 "ELAN Touchscreen" "Evdev Axis Inversion" 0 0
+        xinput set-prop "ELAN Touchscreen" "Coordinate Transformation Matrix" 1 0 0 0 1 0 0 0 1
+#         xinput set-prop --type=int --format=8 "ELAN Touchscreen" "Evdev Axes Swap" 0
+#         xinput set-prop --type=int --format=8 "ELAN Touchscreen" "Evdev Axis Inversion" 0 0
         ;;
 esac

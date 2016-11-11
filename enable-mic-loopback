@@ -1,0 +1,6 @@
+#!/bin/sh
+# Uses PulseAudio to set up a loopback. There does seem to be little latency, but it works.
+pactl load-module module-loopback "source=$(pactl list short sources | grep alsa_input | head -n1 | cut -f2)" "sink=$(pactl list short sinks | grep alsa_output | grep analog | head -n1 | cut -f2)" latency_msec=2
+
+# Note: to restart pulse: pulseaudio -k
+

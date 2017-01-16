@@ -1,24 +1,241 @@
 #!/bin/sh
 
-# RUST_HOME can be set on the command-line to use a custom installation
-if [ -z "$RUST_HOME" ]
+# ———  Config  ———
+
+# Directory where Rust should be installed; this should be user-writable if you
+# want to install/update rust easily. It can be shared (I use /home/install).
+RUST_INST="$HOME/.local/share/rust"
+
+# Platform thing
+PLATFORM="x86_64-unknown-linux-gnu"
+
+# ———  Instructions  ———
+
+# 1. Put this script somewhere in your PATH, e.g. ~/.bin or ~/.local/bin
+# (Note: it must be called run-rust, because a switch below checks if this is the name.)
+# 
+# 2. In the same directory, create sym-links to it for each rust binary you want:
+#   for name in rustc rustdoc rust-gdb rust-lldb cargo; do ln -s run-rust $name; done
+#   
+# 3. Check usage and install rust:
+#   run-rust
+#   run-rust install nightly
+# 
+# 4. Run cargo/rustc/...
+#   rustc --version
+#   cargo new my_project
+#   
+# 5. Temporarily use a different installed rust version via environment variable:
+#   export RUST_VER=1.14.0
+#   rustc --version
+# or:
+#   RUST_VER=nightly rustc --version
+
+
+# ———  Script functions  ———
+
+usage() {
+    echo "run-rust 2.0-rc1
+
+To manage installs:
+
+    run-rust install VER [DATE]
+VER should look like 1.14.0 or beta or nightly (you may have to look up the
+latest stable version).
+If a DATE (e.g. 2017-01-16) is given, download from the archives for this date
+(e.g. run-rust install nightly 2017-01-16).
+
+    run-rust list
+Shows installed versions.
+
+    run-rust set VER [NICK]
+Set a rust version VER to be the default, or give it nickname NICK.
+Rust rust-VER should be installed.
+
+To delete installed versions, manually delete from $RUST_INST .
+
+To select a (non-default) rust version, set the environment variable RUST_VER:
+    export RUST_VER=nightly
+    rustc --version
+or:
+    RUST_VER=nightly rustc --version
+    
+    run-rust run CMD ARGS
+To run the rust binary CMD.
+
+    CMD ARGS
+To run CMD (assuming a symlink exists in your path with the name CMD but
+pointing to this script)."
+}
+
+list() {
+    if [ ! -e "$RUST_INST" ]; then
+        echo "No installation directory. Maybe run install first?" >&2
+        exit 1
+    fi
+    
+    echo "Rust installations found in $RUST_INST :"
+    cd "$RUST_INST" && ls rust-*
+    echo "(You can omit rust- prefix when setting RUST_VER.)"
+}
+
+install() {
+    mkdir -p "$RUST_INST" || exit 1
+    if [ $# -eq 0 ]; then
+        echo "Which version? E.g. 1.14.0 or nightly" >&2
+        exit 1
+    elif [ $# -eq 1 ]; then
+        VER="$1"
+        DATE=""
+        DEST="$RUST_INST/rust-$VER"
+    elif [ $# -eq 2 ]; then
+        VER="$1"
+        DATE="$2"
+        DEST="$RUST_INST/rust-$DATE-$VER"
+    else
+        echo "Too many args: $@" >&2
+    fi
+    
+    if [ -e "$DEST" ]; then
+        echo "Error: already exists: $DEST" >&2
+        exit 1
+    fi
+    
+    NAME="rust-$VER-$PLATFORM"
+    FILENAME="$NAME.tar.gz"
+    if [ -z "$DATE" ]; then
+        SOURCE="https://static.rust-lang.org/dist/$FILENAME"
+    else
+        SOURCE="https://static.rust-lang.org/dist/$DATE/$FILENAME"
+    fi
+    
+    TMP=$(mktemp -d)
+    cd "$TMP" || exit 1
+    curl -O "$SOURCE" || exit 1
+    tar xaf "$FILENAME" || exit 1
+    "$NAME/install.sh" "--prefix=$DEST" || exit 1
+    cd
+    rm -rf "$TMP"
+    
+    if [ ! -e "$RUST_INST/rust-default" ]; then
+        setlink $(basename "$DEST")
+    fi
+}
+
+setlink() {
+    if [ ! -e "$RUST_INST" ]; then
+        echo "No installation directory. Maybe run install first?" >&2
+        exit 1
+    fi
+    
+    if [ $# -eq 0 ]; then
+        echo "Set what version as default (or give what version a nickname)?" >&2
+        exit 1
+    elif [ $# -eq 1 ]; then
+        VER="$1"
+        NICK="default"
+    elif [ $# -eq 2 ]; then
+        VER="$1"
+        NICK="$2"
+    else
+        echo "Too many args: $@" >&2
+    fi
+    
+    TARG="rust-$VER"
+    LINK="$RUST_INST/rust-$NICK"
+    if [ -e "$LINK" ]; then
+        if [ -h "$LINK" ]; then
+            # consider links safe to delete
+            rm "$LINK"
+        else
+            echo "Already exists: $LINK" >&2
+            exit 1
+        fi
+    fi
+    ln -s "$TARG" "$LINK"
+}
+
+run() {
+    if [ -z "$RUST_VER" ]
+    then
+        # there should be a symlink with this name:
+        RUST_VER=default
+    fi
+    RUST_HOME="$RUST_INST/rust-$RUST_VER"
+    
+    # Sanity check
+    if [ ! -e "$RUST_INST" ]; then
+        echo "No installation directory. Maybe run install first?" >&2
+        exit 1
+    elif [ ! -e "$RUST_HOME" ]
+    then
+        echo "run-rust: not found: $RUST_HOME" >&2
+        echo "run-rust: did you install?" >&2
+        if [ "$RUST_VER" != "default" ]
+        then
+            echo "run-rust: did you set the wrong RUST_VER?" >&2
+        fi
+        exit 1
+    elif [ ! -x "$RUST_HOME/bin/rustc" ]
+    then
+        echo "run-rust: not found: $RUST_HOME/bin/rustc" >&2
+        echo "run-rust: bad installation?" >&2
+        exit 1
+    elif [ ! -x "$RUST_HOME/bin/$BIN" ]; then
+        echo "run-rust: could not find binary: $RUST_HOME/bin/$BIN" >&2
+        echo "run-rust: binaries available:" >&2
+        ls "$RUST_HOME/bin" >&2
+        exit 1
+    fi
+
+    export PATH="$PATH:$RUST_HOME/bin"
+    export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$RUST_HOME/lib"
+
+    "$RUST_HOME/bin/$BIN" "$@"
+}
+
+
+# ———  script entrypoint  ———
+
+BIN=$(basename $0)
+
+if [ "$BIN" == "run-rust" ]
 then
-    export RUST_HOME=/home/install/rust
-elif [ ! -x "$RUST_HOME/bin/rustc" ]
-then
-    echo "Not found: \$RUST_HOME/bin/rustc (expands to $RUST_HOME/bin/rustc)" >&2
-    exit 1
+    # management / general help
+    if [ $# -eq 0 ]; then
+        usage
+    fi
+    CMD="$1"
+    shift
+    case "$CMD" in
+        list)
+        list
+        ;;
+        install)
+        install "$@"
+        ;;
+        run)
+        if [ $# -eq 0 ]; then
+            echo "Run what?" >&2
+            exit 1
+        fi
+        BIN="$1"
+        shift
+        run "$@"
+        ;;
+        set)
+        setlink "$@"
+        ;;
+        help)
+        usage
+        ;;
+        *)
+        echo "run-rust: unknown command $CMD" >&2
+        usage
+        exit 1
+        ;;
+    esac
+else
+    # assume user wanted to run a rust binary
+    run "$@"
 fi
-
-PROG=$(basename $0)
-if [ ! -x "$RUST_HOME/bin/$PROG" ]; then
-    echo "Usage: make a symlink with one of the following names and execute that." >&2
-    ls "$RUST_HOME/bin"
-    exit 1
-fi
-
-export RUST_HOME
-export PATH="$PATH:$RUST_HOME/bin"
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$RUST_HOME/lib"
-
-"$RUST_HOME/bin/$PROG" "$@"

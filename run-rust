@@ -96,11 +96,6 @@ install() {
         echo "Too many args: $@" >&2
     fi
     
-    if [ -e "$DEST" ]; then
-        echo "Error: already exists: $DEST" >&2
-        exit 1
-    fi
-    
     NAME="rust-$VER-$PLATFORM"
     FILENAME="$NAME.tar.gz"
     if [ -z "$DATE" ]; then
@@ -111,14 +106,40 @@ install() {
     
     TMP=$(mktemp -d)
     cd "$TMP" || exit 1
+    echo "Downloading: $SOURCE.sha256"
+    curl -O "$SOURCE.sha256" || exit 1
+    SHA="$FILENAME.sha256"
+    
+    if [ -e "$DEST" ]; then
+        if [ -f "$DEST/$SHA" ]
+        then
+            if diff -q "$DEST/$SHA" "$SHA"
+            then
+                echo "Already up to date"
+                exit 0
+            else
+                echo "Removing outdated installation"
+                rm -rf "$DEST"
+            fi
+        else
+            echo "Error: directory used; not upgradeable: $DEST" >&2
+            exit 1
+        fi
+    fi
+    
+    echo "Downloading: $SOURCE"
     curl -O "$SOURCE" || exit 1
+    shasum -a 256 -c "$SHA" || exit 1
     tar xaf "$FILENAME" || exit 1
     "$NAME/install.sh" "--prefix=$DEST" || exit 1
-    cd
+    mv "$SHA" "$DEST/$SHA"
+    cd -
     rm -rf "$TMP"
+    echo "Installed: $DEST"
     
     if [ ! -e "$RUST_INST/rust-default" ]; then
         setlink $(basename "$DEST")
+        echo "Set as default"
     fi
 }
 

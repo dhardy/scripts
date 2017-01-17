@@ -118,7 +118,7 @@ install() {
     rm -rf "$TMP"
     
     if [ ! -e "$RUST_INST/rust-default" ]; then
-        setlink $(basename "$DEST")
+        setlink "$VER"
     fi
 }
 

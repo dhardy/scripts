@@ -2,12 +2,22 @@
 
 # ———  Config  ———
 
+# If it exists, this script is executed first. Config variables can be set there.
+if [ -f "$HOME/.config/run-rust" ]
+then
+    source "$HOME/.config/run-rust"
+fi
+
 # Directory where Rust should be installed; this should be user-writable if you
-# want to install/update rust easily. It can be shared (I use /home/install).
-RUST_INST="$HOME/.local/share/rust"
+# want to install/update rust easily, e.g. "$HOME/.local/share/rust".
+if [ -z "$RUST_INST" ]; then
+    RUST_INST="$HOME/.local/share/rust"
+fi
 
 # Platform thing
-PLATFORM="x86_64-unknown-linux-gnu"
+if [ -z "$PLATFORM" ]; then
+    PLATFORM="x86_64-unknown-linux-gnu"
+fi
 
 # ———  Instructions  ———
 

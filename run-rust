@@ -148,7 +148,7 @@ install() {
     echo "Installed: $DEST"
     
     if [ ! -e "$RUST_INST/rust-default" ]; then
-        setlink $(basename "$DEST")
+        setlink "$VER"
         echo "Set as default"
     fi
 }

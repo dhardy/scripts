@@ -2,10 +2,11 @@
 
 print_info(){
     echo "Temperatures:"
-    echo "acpitz:\t\t$(cat /sys/devices/virtual/hwmon/hwmon0/temp1_input)"
-    echo "coretemp 2:\t$(cat /sys/devices/platform/coretemp.0/temp2_input)"
-    echo "coretemp 4:\t$(cat /sys/devices/platform/coretemp.0/temp4_input)"
-    cat /proc/acpi/ibm/thermal
+#    echo "acpitz:\t\t$(cat /sys/devices/virtual/hwmon/hwmon0/temp1_input)"
+#    echo "coretemp 2:\t$(cat /sys/devices/platform/coretemp.0/temp2_input)"
+#    echo "coretemp 4:\t$(cat /sys/devices/platform/coretemp.0/temp4_input)"
+#    cat /proc/acpi/ibm/thermal
+    sensors
     echo
     echo "Fan:"
     cat /proc/acpi/ibm/fan | egrep "(speed|level):"

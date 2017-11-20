@@ -107,7 +107,8 @@ install() {
     fi
     
     NAME="rust-$VER-$PLATFORM"
-    FILENAME="$NAME.tar.gz"
+    # Both .tar.gz and .tar.xz are supported:
+    FILENAME="$NAME.tar.xz"
     if [ -z "$DATE" ]; then
         SOURCE="https://static.rust-lang.org/dist/$FILENAME"
     else

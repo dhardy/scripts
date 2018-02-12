@@ -95,8 +95,8 @@ alias mv='mv -i'
 #alias rm='my_rm'
 
 # convenience
-alias g='git'
-alias gi='git'
+#alias g='git'
+#alias gi='git'
 # because I sometimes type gs by mistake and NEVER mean ghostscript:
 alias gs='git status'
 alias gl='git log'

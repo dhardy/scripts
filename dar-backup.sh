@@ -14,16 +14,16 @@
 # See dar manual; not all rules are implemented here.
 
 # This is a space-separated list of globs of file names to exclude.
-EXCLUDE_FILES="*.o"
+EXCLUDE_FILES="'*.o'"
 
 # This is a space-separated list of top-level files and directories to exclude from the backup.
 EXCLUDE_TOP=".cache .cargo .ccache .bash_history .thumbnails games download .spring kdesrc"
 
 # This is a space-separated list of globs of paths to exclude.
-EXCLUDE_PATHS=".local/share/Steam .local/share/baloo .local/share/Trash .local/share/akonadi .local/share/baloo .kde/share/apps/nepomuk .Idea*/system safe SailfishOS others rust"
+EXCLUDE_PATHS=".local/share/Steam .local/share/baloo .local/share/Trash .local/share/akonadi .local/share/baloo .kde/share/apps/nepomuk .Idea*/system SailfishOS"
 
 # File globs not to compress
-NO_COMPRESSION="*.gz *.bz2 *.zip *.png *.jpg *.jpeg"
+NO_COMPRESSION="'*.gz' '*.bz2' '*.zip' '*.png' '*.jpg' '*.jpeg'"
 
 # 0 or 1 : if set, backups are relative to the previous backup
 RELATIVE_BACKUPS="1"
@@ -44,6 +44,8 @@ done
 for nc in $NO_COMPRESSION; do
     DAR_OPTS="$DAR_OPTS -Z $nc"
 done
+# echo "Options: $DAR_OPTS"
+# exit
 
 if [ "$#" -ne "1" ]; then
     echo "Usage: $0 DEST"
@@ -89,10 +91,10 @@ exclude_top(){
 link_latest(){
     # $1: local name of backup minus extension
     # FIXME This will probably fail on files with spaces in the name:
-    for l in $DEST_LATEST/$1.*.dar; do
+    for l in $DEST_LATEST/$1*.dar; do
         rm -f "$l" || return 1
     done
-    for l in $DEST_NOW/$1.*.dar; do
+    for l in $DEST_NOW/$1*.dar; do
         ln -s "../$NOW/$(basename "$l")" "$DEST_LATEST/$(basename "$l")" || return 1
     done
 }

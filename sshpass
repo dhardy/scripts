@@ -1,5 +1,2 @@
 #!/bin/sh
-# Put in a boot location, e.g. ~/.kde/Autostart
-SSH_ASKPASS=/usr/bin/ksshaskpass
-export SSH_ASKPASS
-exec ssh-add
+SSH_ASKPASS=/usr/bin/ksshaskpass SSH_ASKPASS_REQUIRE=force ssh-add </dev/null

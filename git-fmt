@@ -1,0 +1,6 @@
+#!/bin/sh
+if git diff --exit-code >/dev/null; then
+    cargo fmt $@
+else
+    echo "Git index is dirty; not running cargo fmt"
+fi

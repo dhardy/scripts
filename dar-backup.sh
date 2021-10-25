@@ -17,7 +17,7 @@
 EXCLUDE_FILES="'*.o'"
 
 # This is a space-separated list of top-level files and directories to exclude from the backup.
-EXCLUDE_TOP=".cache .cargo .ccache .bash_history .thumbnails games download .spring kdesrc"
+EXCLUDE_TOP=".cache .cargo .ccache .bash_history .thumbnails games download .spring kdesrc .faforever pictures .gradle"
 
 # This is a space-separated list of globs of paths to exclude.
 EXCLUDE_PATHS=".local/share/Steam .local/share/baloo .local/share/Trash .local/share/akonadi .local/share/baloo .kde/share/apps/nepomuk .Idea*/system SailfishOS"

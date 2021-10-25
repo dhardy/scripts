@@ -101,6 +101,7 @@ alias mv='mv -i'
 alias gs='git status'
 alias gl='git log'
 alias glp='git log -p'
+alias gls='git log --stat'
 alias ga='git add --ignore-removal'
 alias gar='git add --all'
 alias gap='git add -p'
@@ -114,11 +115,9 @@ alias gr='git remote'
 alias grv='git remote -v'
 alias gba='git branch -a'
 #alias go='git checkout '
-alias gh='git hist' #relies on a git config item
+#alias gh='git hist' #relies on a git config item
 
-alias mc.net='ssh africa@malariacontrol.net'
-alias kumbo='ssh africa@kumbo.tph.unibas.ch'
-alias macmini='ssh africa@131.152.193.129'
+alias bat='bat --pager "less -RF"'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
@@ -166,4 +165,5 @@ export JAVA_HOME=$(readlink -f /usr/bin/java | sed "s:bin/java::")
 export PYTHONPATH=~/.py-site-packages
 export GOPATH=/home/dhardy/go
 export RUST_SRC_PATH=/home/dhardy/other/rust/src
-export PATH="$PATH:$HOME/.cargo/bin"
+export SHADERC=glslc
+. "$HOME/.cargo/env"

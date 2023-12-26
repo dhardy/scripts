@@ -1,8 +1,0 @@
-#!/usr/bin/perl
-# Unload disk head on drives that support IDLE IMMEDIATE with the UNLOAD feature.
-$dev="$ARGV[0]" or die "Specify device as argument.\n";
-$HDIO_DRIVE_TASK=0x031e;
-$args=pack("ccccccc",0xe1,0x44,0,0x4C,0x4E,0x55,0);
-open(DEV,"<",$dev) or die "open(\"$dev\"): $!\n";
-ioctl(DEV,$HDIO_DRIVE_TASK,$args) or die "Unload failed: $!\n";
-

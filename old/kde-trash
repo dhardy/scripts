@@ -1,9 +1,0 @@
-#!/bin/sh
-for f in "$@"
-do
-	echo -n "Moving $f to trash bin..."
-	kioclient move "$f" trash:/
-	echo -n "  num items in trash: "
-	ls $HOME/.local/share/Trash/info | wc -l
-done
-

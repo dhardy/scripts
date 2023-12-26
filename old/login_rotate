@@ -1,6 +1,0 @@
-#!/bin/sh
-if [ "$(xrandr|grep Screen)x" = "Screen 0: minimum 320 x 175, current 1680 x 1050, maximum 1680 x 1050x" ]
-then
-	xrandr -o left
-fi
-

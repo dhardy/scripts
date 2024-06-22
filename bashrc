@@ -99,6 +99,7 @@ alias mv='mv -i'
 #alias gi='git'
 # because I sometimes type gs by mistake and NEVER mean ghostscript:
 alias gs='git status'
+alias gsw='git switch'
 alias gl='git log'
 alias glp='git log -p'
 alias gls='git log --stat'
@@ -144,7 +145,7 @@ if ! shopt -oq posix; then
 fi
 
 # vim stuff
-export EDITOR=vi
+export EDITOR=nano
 export VISUAL=kwrite
 
 # prompt

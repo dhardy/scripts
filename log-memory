@@ -1,0 +1,16 @@
+#!/bin/bash -e
+
+if [ $# -ne 1 ]
+then
+    echo "Error: require log file name"
+    exit 1
+fi
+
+rm $1
+
+while true
+do
+    date | tee -a $1
+    free -wh | tee -a $1
+    sleep 1
+done

@@ -1,0 +1,11 @@
+#!/bin/sh
+
+if [ "$#" -eq "0" ]; then
+    pacmd unload-module module-loopback
+    pacmd load-module module-loopback latency_msec=5
+elif [ "$1" = "unload" ]; then
+    pacmd unload-module module-loopback
+else
+    echo "Usage: $0"
+    echo "Usage: $0 unload"
+fi

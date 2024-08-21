@@ -1,4 +1,0 @@
-#!/bin/sh
-cat /proc/acpi/battery/BAT0/info | grep "last full capacity"
-cat /proc/acpi/battery/BAT0/state
-

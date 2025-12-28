@@ -117,6 +117,9 @@ alias grv='git remote -v'
 alias gba='git branch -a'
 #alias go='git checkout '
 #alias gh='git hist' #relies on a git config item
+alias jd='jj diff'
+alias jc='jj commit'
+alias js='jj status'
 
 alias bat='bat --pager "less -RF"'
 
@@ -158,6 +161,8 @@ fi
 
 # make git log interact better:
 export LESS=R
+
+export SYSTEMD_LESS="FRSMK"
 
 #export ANDROID_HOME=/home/install/android-sdk-linux
 #export PATH="$PATH:$ANDROID_HOME/tools:$ANDROID_HOME/platform-tools:/home/install/rust/bin"
